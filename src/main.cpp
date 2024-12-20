@@ -161,7 +161,15 @@ int main() {
     }
     JsonObject api_settings = api_settings_doc->as<JsonObject>();
 
-    const char *api_url = api_settings["url"] | MO_SIM_ENDPOINT_URL;
+    const char* port = std::getenv("PORT");
+    if (port == nullptr) {
+        port = "8000"; // default port
+    }
+
+    std::string endpoint_url = "http://0.0.0.0:" + std::string(port);
+    std::cout << "Starting server on " << endpoint_url << std::endl;
+
+    const char *api_url = api_settings["url"] | endpoint_url.c_str();
 
     mg_http_listen(&mgr, api_url, http_serve, (void*)api_url);     // Create listening connection
 
